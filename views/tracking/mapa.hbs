@@ -1,0 +1,150 @@
+{{#each errors}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{text}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/each}}
+
+<div class="table-responsive">
+    <form action="/tracking/mapa" method="post">
+        <table class="table table-borderless" style="font-weight:bold ">
+            <tbody>
+                <tr>
+                    <td>
+                        <label for="formulariorastreador" class="form-label">Rastreador</label>
+                    </td>
+                    <td>
+                        <label for="formulariousuarios" class="form-label">Usuario</label>
+                    </td>
+                    <td>
+                        <label for="formulariofecha" class="form-label">Rango de Fechas</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="form-control" name="formulariorastreadordatalistOptions"
+                            list="formulariorastreadordatalistOptions" id="formulariorastreador"
+                            value="{{formulariorastreadordatalistOptions}}">
+                        <datalist id="formulariorastreadordatalistOptions">
+                            {{#each defrastreador}}
+                            <option value="{{this}}">
+                                {{/each}}
+                        </datalist>
+                    </td>
+                    <td>
+                        <input class="form-control" name="formulariousuariosdatalistOptions"
+                            list="formulariousuariosdatalistOptions" id="formulariousuarios"
+                            value="{{formulariousuariosdatalistOptions}}">
+                        <datalist id="formulariousuariosdatalistOptions">
+                            {{#each defuser}}
+                            <option value="{{this}}">
+                                {{/each}}
+                        </datalist>
+                    </td>
+                    <td>
+
+                        <input class="form-control" type="text" name="datetimes" />
+                        <script>
+                            $(function () {
+                                $('input[name="datetimes"]').daterangepicker({
+                                    showDropdowns: true,
+                                    timePicker: true,
+                                    timePicker24Hour: true,
+                                    timePickerSeconds: true,
+                                    startDate: moment().startOf('hour').add(-2, 'hour'),
+                                    endDate: moment().startOf('hour').add(2, 'hour'),
+                                    locale: {
+                                        format: 'YYYY-MM-DDTHH:mm:ss',
+                                        separator: ' a '
+                                    }
+                                });
+                            });
+                        </script>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div class="d-grid gra-2 col-6 mx-auto">
+                            <button class="btn btn-primary" type="submin">Buscar</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="map container" id="map"></div>
+<script>
+    
+    var map = L.map('map').setView([0, 0], 2);
+
+    //const tilesProvider = 'https://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
+    const tilesProvider = 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
+
+    L.tileLayer(tilesProvider, {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 21,
+        minZoom: 1,
+        tileSize: 512,
+        zoomOffset: -1
+    }).addTo(map);
+
+    let dronicon = L.icon({
+        iconUrl: 'https://img.icons8.com/external-flat-icons-inmotus-design/67/000000/external-air-drone-flat-icons-inmotus-design-13.png',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+    });
+    let usericon = L.icon({
+        iconUrl: 'https://img.icons8.com/ios/50/000000/gps-device.png',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
+    });
+    L.RotatedMarker = L.Marker.extend({
+        options: {
+            angle: 0
+        },
+        _setPos: function (pos) {
+            L.Marker.prototype._setPos.call(this, pos);
+            if (L.DomUtil.TRANSFORM) {
+                // use the CSS transform rule if available
+                console.log(this.options.angle);
+                this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
+            } else if (L.Browser.ie) {
+                // fallback for IE6, IE7, IE8
+                var rad = this.options.angle * (Math.PI / 180),
+                    costheta = Math.cos(rad),
+                    sintheta = Math.sin(rad);
+                this._icon.style.filter += ' progid:DXImageTransform.Microsoft.Matrix(sizingMethod=\'auto expand\', M11=' +
+                    costheta + ', M12=' + (-sintheta) + ', M21=' + sintheta + ', M22=' + costheta + ')';
+            }
+        }
+    });
+    L.rotatedMarker = function (pos, options) {
+        return new L.RotatedMarker(pos, options);
+    };
+    var groupdrons = L.markerClusterGroup().addTo(map);
+    var groupuser = L.markerClusterGroup().addTo(map);
+    var points = [];
+    {{#each dataLocations}}
+       {{#if this.[2].length}}
+            var dron{{this.[6]}} = L.rotatedMarker([{{this.[2].[1]}}, {{this.[2].[0]}} ], { 
+                    icon: dronicon,
+                    angle: + {{this.[2].[3]}} * 180 / Math.PI,
+                    dragable: true
+                }).addTo(groupdrons);
+        dron{{this.[6]}}.bindPopup("Rastreador:<b> {{this.[1]}}</b><br>Velocidad: <b>{{this.[2].[4]}}m/s</b><br>Fecha: <b>{{this.[0]}}</b> <br>Distancia: <b>{{this.[5]}} m</b>");
+        {{/if}}
+       {{#if this.[4].length}}
+        var user{{this.[6]}} = L.rotatedMarker([{{this.[4].[1]}}, {{this.[4].[0]}}], {
+            icon: usericon,
+            angle: +{{this.[4].[4]}} * 180 / Math.PI,
+            dragable: true
+        }).addTo(groupuser);; 
+        user{{this.[6]}}.bindPopup("Usuario:<b>{{this.[3]}}</b><br>Velocidad: <b>{{this.[4].[4]}} m/s</b><br>Fecha: <b>{{this.[0]}}</b><br>Distancia: <b>{{this.[5]}} m</b>");
+        
+        {{/if}}
+    {{/each}}
+
+
+    $(window).on("resize", function () { $("#map").height($(window).height()); map.invalidateSize(); }).trigger("resize");
+</script>

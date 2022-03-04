@@ -1,0 +1,29 @@
+{
+    "name": "web_aplicacion_localizacion_inalambriaca",
+    "version": "0.0.1",
+    "description": "web_aplicacion_localizacion_inalambriaca",
+    "author": "Diego Cruz Rodriguez <alu0101105802@ull.edu.es",
+    "license": "creative commons Reconocimiento-NoComercial  4.0 Internacional.",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js"
+    },
+    "keywords": [
+        "web",
+        "aplicacion",
+        "localizacion",
+        "inalambriaca"
+    ],
+    "dependencies": {
+        "ejs": "^2.6.1",
+        "express": "^4.17.3",
+        "express-handlebars": "^6.0.3",
+        "express-session": "^1.17.2",
+        "method-override": "^3.0.0",
+        "request": "^2.88.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.15"
+    }
+}

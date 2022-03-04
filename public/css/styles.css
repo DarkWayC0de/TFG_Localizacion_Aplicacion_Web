@@ -1,0 +1,47 @@
+html{
+    height: 100%;
+}
+body {
+    height: auto; 
+    min-height: 100%; 
+    width: auto;
+    background: #1d1c1c;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #303030, #1d1c1c);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #434343, #1d1c1c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+#preapp{
+    height: auto;
+    min-height: 100% ;
+    flex: 1 0 auto;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+#nav{
+    border-radius: 5px;
+}
+#app {
+    overflow: hidden;
+    height: auto;
+    min-height:100%; 
+    background: hsl(107, 51%, 39%);
+    background: -webkit-linear-gradient(to right, hsl(108, 50%, 30%), hsl(107, 51%, 39%));
+    background: linear-gradient(to right, hsl(108, 50%, 30%), hsl(107, 51%, 39%));
+    padding-bottom: 10px;
+    border-radius: 5px;
+
+}
+
+#resultadodiv {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#map{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+
+}
